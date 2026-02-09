@@ -1,0 +1,157 @@
+// Copyright (c) 2022 The ZMK Contributors
+// SPDX-License-Identifier: MIT
+// #include <dt-bindings/zmk/rgb.h>
+
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 2500// 600
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 20// 10
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/pointing.h>
+
+
+#define DEF 0
+#define MSE 1
+#define NUM 2
+#define FUN 3
+#define DLM 4
+#define SYM 5
+#define MED 6
+
+&lt {
+  flavor = "hold-preferred";
+  tapping-term-ms = <150>;
+  quick-tap-ms = <100>;
+  require-prior-idle-ms = <0>;
+  global-quick-tap;
+};
+
+/ {
+    behaviors {
+        ht: hold_tap {
+            label = "hold_tap";
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <150>;
+            require-prior-idle-ms = <0>;
+            global-quick-tap;
+            bindings = <&kp>, <&kp>;
+        };
+        mmv {
+            acceleration-exponent = <1>;// 1
+            time-to-max-speed-ms = <300>;// 40
+            delay-ms = <0>;// 0
+        };
+        msc {
+            acceleration-exponent = <0>;// 0
+            time-to-max-speed-ms = <40>;// 500
+            delay-ms = <0>;// 10
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+
+        function_layer {
+            if-layers = <MSE NUM>;
+            then-layer = <FUN>;
+        };
+
+        media_layer {
+            if-layers = <DLM SYM>;
+            then-layer = <MED>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            display-name = "DEFAULT";
+            bindings = <
+            &kp Q   &kp W          &kp F        &kp P         &kp B             &kp J          &kp L         &kp U        &kp Y            &trans
+            &kp A   &ht LALT R     &ht LCTRL S  &ht LSHIFT T  &ht LGUI G        &ht RGUI M     &ht RSHIFT N  &ht RCTRL E  &ht RALT I       &kp O
+            &kp Z   &kp X          &kp C        &kp D         &kp V             &kp K          &kp H         &kp BSPC     &kp LC(BSPC)     &trans
+            &trans  &lt MSE SPACE  &lt NUM TAB                                  &lt DLM ENTER  &lt SYM ESC   &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN  &inc_dec_kp SCRL_UP SCRL_DOWN>;
+        };
+
+        mouse_layer {
+            display-name = "MOUSE";
+            bindings = <
+            &trans  &trans    &trans     &trans      &trans          &kp N0     &kp CARET  &kp PRCNT  &kp DLLR   &kp CAPS
+            &trans  &kp LALT  &kp LCTRL  &kp LSHIFT  &kp LGUI        &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &trans
+            &trans  &trans    &trans     &trans      &trans          &kp LC(O)  &kp LC(D)  &kp LC(U)  &kp LC(I)  &kp LC(N6)
+            &trans  &trans    &trans                                 &kp ENTER  &kp ESC    &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN  &inc_dec_kp SCRL_LEFT SCRL_RIGHT>;
+        };
+
+        num_layer {
+            display-name = "NUM";
+            bindings = <
+            &trans  &trans    &trans     &trans      &trans          &mkp MCLK  &kp N7   &kp N8  &kp N9  &trans
+            &trans  &kp LALT  &kp LCTRL  &kp LSHIFT  &kp LGUI        &mkp LCLK  &kp N4   &kp N5  &kp N6  &kp N0
+            &trans  &trans    &trans     &trans      &trans          &mkp RCLK  &kp N1   &kp N2  &kp N3  &trans
+            &trans  &trans    &trans                                 &kp ENTER  &kp ESC  &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN  &inc_dec_kp SCRL_LEFT SCRL_RIGHT>;
+        };
+
+        function_layer {
+            display-name = "FUNCTION";
+            bindings = <
+            &trans  &trans    &trans     &trans      &trans          &trans       &kp F9   &kp F10  &kp F11  &kp F12
+            &trans  &kp LALT  &kp LCTRL  &kp LSHIFT  &kp LGUI        &bootloader  &kp F5   &kp F6   &kp F7   &kp F8
+            &trans  &trans    &trans     &trans      &trans          &trans       &kp F1   &kp F2   &kp F3   &kp F4
+            &trans  &trans    &trans                                 &kp ENTER    &kp ESC  &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN  &inc_dec_kp SCRL_LEFT SCRL_RIGHT>;
+        };
+
+        delim_layer {
+            display-name = "DELIM";
+            bindings = <
+            &kp BSLH   &kp PIPE       &kp LPAR  &kp RPAR  &kp AMPS                &trans    &trans      &trans     &trans    &trans
+            &kp TILDE  &kp LESS_THAN  &kp LBKT  &kp RBKT  &kp GREATER_THAN        &kp RGUI  &kp RSHIFT  &kp RCTRL  &kp RALT  &trans
+            &kp GRAVE  &kp SQT        &kp LBRC  &kp RBRC  &kp DQT                 &trans    &trans      &trans     &trans    &trans
+            &trans     &kp SPACE      &kp TAB                                     &trans    &trans      &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_BRI_UP C_BRI_DEC  &inc_dec_kp SCRL_UP SCRL_DOWN>;
+        };
+
+        symbol_layer {
+            display-name = "SYMBOL";
+            bindings = <
+            &kp PLUS   &kp MINUS  &kp ASTRK  &kp EQUAL  &kp AT           &trans    &trans       &trans     &trans    &trans
+            &kp HASH   &kp UNDER  &kp FSLH   &kp COLON  &kp SEMI         &kp RGUI  &kp RSHIFT   &kp RCTRL  &kp RALT  &trans
+            &kp DLLR   &kp EXCL   &kp QMARK  &kp DOT    &kp COMMA        &trans    &trans       &trans     &trans    &trans
+            &trans     &kp SPACE  &kp TAB                                &trans    &trans       &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_BRI_UP C_BRI_DEC  &inc_dec_kp SCRL_UP SCRL_DOWN>;
+        };
+
+        media_layer {
+            display-name = "MEDIA";
+            bindings = <
+            &kp C_MUTE    &kp C_VOL_DN  &kp C_VOL_UP    &kp C_BRI_DEC  &kp C_BRI_UP         &trans    &trans       &trans     &trans    &trans
+            &bt BT_CLR    &trans        &studio_unlock  &trans         &bootloader          &kp RGUI  &kp RSHIFT   &kp RCTRL  &kp RALT  &trans
+            &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2    &bt BT_SEL 3   &bt BT_SEL 4         &trans    &trans       &trans     &trans    &trans
+            &trans        &kp SPACE     &kp TAB                                             &trans    &trans       &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_BRI_UP C_BRI_DEC  &inc_dec_kp SCRL_UP SCRL_DOWN>;
+        };
+    };
+};
